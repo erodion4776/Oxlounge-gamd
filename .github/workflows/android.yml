@@ -30,14 +30,11 @@ jobs:
 
     - name: Setup Gradle
       uses: gradle/actions/setup-gradle@v3
+      with:
+        gradle-version: '9.3.1'
 
     - name: Build Debug APK
-      run: |
-        if [ -f "./gradlew" ]; then
-          ./gradlew :app:assembleDebug
-        else
-          gradle :app:assembleDebug
-        fi
+      run: gradle :app:assembleDebug
 
     - name: Upload Debug APK Artifact
       uses: actions/upload-artifact@v4

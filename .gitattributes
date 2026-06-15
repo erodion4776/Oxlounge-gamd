@@ -1,0 +1,5 @@
+# Mark Gradle wrap jar and images as binary to prevent corruption during Git synchronization
+*.jar binary
+*.png binary
+*.webp binary
+*.apk binary
