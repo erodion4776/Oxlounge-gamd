@@ -22,6 +22,15 @@ android {
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
   }
 
+  sourceSets {
+    getByName("main") {
+      val mainDir = if (file("src/Main").exists()) "src/Main" else "src/main"
+      manifest.srcFile("$mainDir/AndroidManifest.xml")
+      java.setSrcDirs(listOf("$mainDir/java", "$mainDir/kotlin"))
+      res.setSrcDirs(listOf("$mainDir/res"))
+    }
+  }
+
   val keystoreFile = file("${rootDir}/debug.keystore")
   if (!keystoreFile.exists()) {
     val base64File = file("${rootDir}/debug.keystore.base64")
