@@ -1,4 +1,4 @@
-package com.example
+package com.oxlounge
 
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onRoot
@@ -20,7 +20,7 @@ class GreetingScreenshotTest {
 
   @Test
   fun greeting_screenshot() {
-    composeTestRule.setContent { LoungeAppTheme { LoungeAppContent() } }
+    composeTestRule.setContent { LoungeAppTheme { LoungeAppContent(startScreen = AppScreen.SPIN_WHEEL) } }
 
     composeTestRule.onRoot().captureRoboImage(filePath = "src/test/screenshots/greeting.png")
   }

@@ -1,4 +1,4 @@
-package com.example
+package com.oxlounge
 
 import android.content.Context
 import android.graphics.Paint
@@ -123,14 +123,19 @@ data class WheelSegment(
 )
 
 @Composable
-fun LoungeAppContent() {
+fun LoungeAppContent(startScreen: AppScreen = AppScreen.SPLASH) {
     val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
     val vibrator = remember { context.getSystemService(Context.VIBRATOR_SERVICE) as? Vibrator }
     val safeVibrate = remember(vibrator) {
         { millis: Long ->
             try {
-                vibrator?.vibrate(millis)
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                    vibrator?.vibrate(android.os.VibrationEffect.createOneShot(millis, android.os.VibrationEffect.DEFAULT_AMPLITUDE))
+                } else {
+                    @Suppress("DEPRECATION")
+                    vibrator?.vibrate(millis)
+                }
             } catch (e: Exception) {
                 // Silently ignore vibration warnings or security exceptions
             }
@@ -138,7 +143,7 @@ fun LoungeAppContent() {
     }
 
     // Navigation and Passcode state
-    var currentScreen by remember { mutableStateOf(AppScreen.SPLASH) }
+    var currentScreen by remember { mutableStateOf(startScreen) }
     var enteredPasscode by remember { mutableStateOf("") }
     var isPasscodeError by remember { mutableStateOf(false) }
 
@@ -297,12 +302,12 @@ fun LoungeAppContent() {
                                         val sectorSweep = 360f / segmentsList.size
                                         val targetCenterAngle = (selectedIndex * sectorSweep) + (sectorSweep / 2f)
                                         
-                                        // Set 8 full rotations + relative distance to line up target sector at 12 o'clock pointer (270 degrees)
-                                        val destinationAngle = (8 * 360f) + (270f - targetCenterAngle)
-
                                         // Reset animatable cleanly within bounds before launch to prevent rotation overflow
                                         val currentAngleBounded = rotationAnimatable.value % 360f
                                         rotationAnimatable.snapTo(currentAngleBounded)
+
+                                        val offsetToTarget = ((270f - targetCenterAngle) - currentAngleBounded + 360f) % 360f
+                                        val destinationAngle = currentAngleBounded + (8 * 360f) + offsetToTarget
 
                                         // 3. Smooth custom decelerating float animation
                                         rotationAnimatable.animateTo(
@@ -902,10 +907,10 @@ fun SpinWheelScreen(
                                     Slider(
                                         value = segment.weight,
                                         onValueChange = { newValue ->
-                                            onWeightChange(index, newValue.coerceIn(0f, 100f))
+                                            onWeightChange(index, newValue.coerceIn(1f, 100f))
                                         },
-                                        valueRange = 0f..100f,
-                                        steps = 100,
+                                        valueRange = 1f..100f,
+                                        steps = 98,
                                         colors = SliderDefaults.colors(
                                             thumbColor = AccentGold,
                                             activeTrackColor = GlowPurple,
@@ -1015,6 +1020,7 @@ fun PrizeWinningDialog(
                     .clip(RoundedCornerShape(24.dp)) // rounded-3xl (24.dp)
                     .background(DeepPurple)
                     .border(2.dp, GlowPurple.copy(alpha = 0.3f), RoundedCornerShape(24.dp))
+                    .verticalScroll(rememberScrollState())
                     .padding(28.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center

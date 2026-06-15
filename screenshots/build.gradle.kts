@@ -1,3 +1,5 @@
+import java.util.Base64
+
 plugins {
   alias(libs.plugins.android.application)
   alias(libs.plugins.kotlin.compose)
@@ -7,17 +9,32 @@ plugins {
 }
 
 android {
-  namespace = "com.example"
+  namespace = "com.oxlounge"
   compileSdk = 35
 
   defaultConfig {
     applicationId = "com.aistudio.neonwheel.qyzb7h"
-    minSdk = 24
+    minSdk = 28
     targetSdk = 35
     versionCode = 1
     versionName = "1.0"
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+  }
+
+  val keystoreFile = file("${rootDir}/debug.keystore")
+  if (!keystoreFile.exists()) {
+    val base64File = file("${rootDir}/debug.keystore.base64")
+    if (base64File.exists()) {
+      try {
+        val base64Bytes = base64File.readBytes()
+        val base64Str = String(base64Bytes).replace("\\s".toRegex(), "")
+        val decodedBytes = Base64.getDecoder().decode(base64Str)
+        keystoreFile.writeBytes(decodedBytes)
+      } catch (e: Exception) {
+        project.logger.error("Failed to decode debug.keystore.base64: ${e.message}")
+      }
+    }
   }
 
   signingConfigs {
@@ -44,7 +61,7 @@ android {
       signingConfig = signingConfigs.getByName("release")
     }
     debug {
-      signingConfig = signingConfigs.getByName("debugConfig")
+      // Use default Android debug signing configuration instead of the custom debugConfig to prevent package parsing errors.
     }
   }
   compileOptions {
