@@ -1,0 +1,6 @@
+{
+  "name": "Oxlounge",
+  "description": "A sleek, dark lounge-themed spin wheel app with neon purple and gold accents for offline promotions.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
