@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="100dp"
+    android:height="100dp"
+    android:viewportWidth="100"
+    android:viewportHeight="100">
+
+    <!-- Luxury Dark Deep Background -->
+    <path
+        android:fillColor="#1A1A24"
+        android:pathData="M50,50m-48,0a48,48 0 1,1 96,0a48,48 0 1,1 -96,0" />
+
+    <!-- Glowing Outer Accent Ring -->
+    <path
+        android:strokeColor="#FBBF24"
+        android:strokeWidth="2.5"
+        android:pathData="M50,50m-42,0a42,42 0 1,1 84,0a42,42 0 1,1 -84,0" />
+
+    <!-- Inner Purple Accent Ring -->
+    <path
+        android:strokeColor="#8B5CF6"
+        android:strokeWidth="1"
+        android:pathData="M50,50m-38,0a38,38 0 1,1 76,0a38,38 0 1,1 -76,0" />
+
+    <!-- Stylized OX Monogram & Horns -->
+    <!-- The Horns (Golden elegant arch) -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#FBBF24"
+        android:strokeWidth="4"
+        android:strokeLineCap="round"
+        android:pathData="M30,30 C35,22 45,20 50,22 C55,20 65,22 70,30" />
+
+    <!-- The Ox Head / V-shape & Ears -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#FBBF24"
+        android:strokeWidth="4"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:pathData="M35,38 L50,55 L65,38" />
+
+    <!-- The Central 'O' (Golden Ring) -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#FBBF24"
+        android:strokeWidth="4.5"
+        android:pathData="M50,60m-14,0a14,14 0 1,1 28,0a14,14 0 1,1 -28,0" />
+
+    <!-- Elegant Cross/Star Sparkle Details -->
+    <path
+        android:fillColor="#FBBF24"
+        android:pathData="M25,65 L27,65 L27,63 L29,65 L31,65 L29,67 L27,67 L27,69 L25,67 L25,65 Z" />
+    <path
+        android:fillColor="#8B5CF6"
+        android:pathData="M75,65 L77,65 L77,63 L79,65 L81,65 L79,67 L77,67 L77,69 L75,67 L75,65 Z" />
+
+</vector>
