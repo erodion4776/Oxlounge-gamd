@@ -24,10 +24,10 @@ android {
 
   sourceSets {
     getByName("main") {
-      val mainDir = if (file("src/Main").exists()) "src/Main" else "src/main"
+      val mainDir = if (project.projectDir.resolve("src/Main").exists()) "src/Main" else "src/main"
       manifest.srcFile("$mainDir/AndroidManifest.xml")
-      java.setSrcDirs(listOf("$mainDir/java", "$mainDir/kotlin"))
-      res.setSrcDirs(listOf("$mainDir/res"))
+      java.srcDirs("$mainDir/java", "$mainDir/kotlin")
+      res.srcDirs("$mainDir/res")
     }
   }
 
