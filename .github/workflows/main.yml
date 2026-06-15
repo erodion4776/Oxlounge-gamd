@@ -27,15 +27,6 @@ jobs:
         with:
           gradle-version: '8.9'
 
-      - name: Show project structure
-        run: |
-          echo "=== Root files ==="
-          ls -la
-          echo "=== settings.gradle.kts ==="
-          cat settings.gradle.kts 2>/dev/null || cat settings.gradle 2>/dev/null || echo "Not found"
-          echo "=== build.gradle.kts ==="
-          cat build.gradle.kts 2>/dev/null || echo "Not found"
-
       - name: Create .env file
         run: echo "GEMINI_API_KEY=placeholder" > .env
 
@@ -48,6 +39,15 @@ jobs:
             fi
           done
 
+      - name: Show build files
+        run: |
+          echo "=== settings.gradle.kts ==="
+          cat settings.gradle.kts 2>/dev/null || echo "not found"
+          echo "=== build.gradle.kts ==="
+          cat build.gradle.kts 2>/dev/null || echo "not found"
+          echo "=== screenshots/build.gradle.kts ==="
+          cat screenshots/build.gradle.kts 2>/dev/null || echo "not found"
+
       - name: Cache Gradle
         uses: actions/cache@v4
         with:
@@ -58,18 +58,18 @@ jobs:
           restore-keys: ${{ runner.os }}-gradle-
 
       - name: Build debug APK
-        run: gradle assembleDebug --stacktrace 2>&1 | tail -150
+        run: gradle assembleDebug --stacktrace --no-configuration-cache 2>&1
 
       - name: Find and copy APK
         run: |
-          echo "=== Searching for APK ==="
-          find . -name "*.apk" | head -10
-          APK=$(find . -name "app-debug.apk" | head -1)
+          echo "=== All APK files found ==="
+          find . -name "*.apk" -not -path "./APK_DOWNLOAD/*" -not -path "./.build-outputs/*"
+          APK=$(find . -name "app-debug.apk" -not -path "./APK_DOWNLOAD/*" -not -path "./.build-outputs/*" | head -1)
           if [ -z "$APK" ]; then
-            echo "❌ No APK found"
+            echo "❌ No APK found — build failed"
             exit 1
           fi
-          echo "✅ Found: $APK"
+          echo "✅ Source APK: $APK"
           mkdir -p .build-outputs APK_DOWNLOAD
           cp "$APK" .build-outputs/app-debug.apk
           cp "$APK" APK_DOWNLOAD/app-debug.apk
