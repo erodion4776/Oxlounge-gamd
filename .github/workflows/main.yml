@@ -26,68 +26,58 @@ jobs:
         run: |
           echo "=== Root files ==="
           ls -la
-          echo "=== App folder ==="
-          ls -la app/ || echo "No app/ folder"
-          find . -name "build.gradle.kts" | head -10
-          find . -name "gradlew" | head -5
+          echo "=== build.gradle.kts content ==="
+          cat build.gradle.kts
+          echo "=== settings.gradle.kts content ==="
+          cat settings.gradle.kts
 
       - name: Create .env file
         run: echo "GEMINI_API_KEY=placeholder" > .env
 
-      - name: Fix signing config in build.gradle.kts
+      - name: Fix signing config
         run: |
-          FILE="app/build.gradle.kts"
-          if [ -f "$FILE" ]; then
-            echo "Found $FILE — removing signingConfig line"
-            sed -i '/signingConfig/d' "$FILE"
-            echo "Done. Relevant lines:"
-            grep -n "signing\|debug\|release" "$FILE" || echo "No signing lines remain"
-          else
-            echo "ERROR: $FILE not found"
-            find . -name "*.kts" | head -10
-            exit 1
-          fi
+          sed -i '/signingConfig/d' build.gradle.kts
+          echo "✅ Done. Signing lines remaining:"
+          grep -n "signing" build.gradle.kts || echo "None"
 
       - name: Make gradlew executable
-        run: |
-          GRADLEW=$(find . -name "gradlew" | head -1)
-          echo "Found gradlew at: $GRADLEW"
-          chmod +x "$GRADLEW"
+        run: chmod +x gradlew
 
-      - name: Cache Gradle packages
+      - name: Cache Gradle
         uses: actions/cache@v4
         with:
           path: |
             ~/.gradle/caches
             ~/.gradle/wrapper
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
+          restore-keys: ${{ runner.os }}-gradle-
 
       - name: Build debug APK
-        run: |
-          GRADLEW=$(find . -name "gradlew" | head -1)
-          echo "Running: $GRADLEW assembleDebug"
-          "$GRADLEW" assembleDebug --stacktrace
+        run: ./gradlew assembleDebug --stacktrace 2>&1 | tail -150
 
       - name: Find and copy APK
         run: |
           echo "=== Searching for APK ==="
           find . -name "*.apk" | head -10
           APK=$(find . -name "app-debug.apk" | head -1)
-          echo "Found APK: $APK"
+          if [ -z "$APK" ]; then
+            echo "❌ No APK found"
+            exit 1
+          fi
+          echo "✅ Found: $APK"
           mkdir -p .build-outputs APK_DOWNLOAD
           cp "$APK" .build-outputs/app-debug.apk
           cp "$APK" APK_DOWNLOAD/app-debug.apk
+          ls -lh APK_DOWNLOAD/app-debug.apk
 
-      - name: Verify APK is real
+      - name: Verify APK size
         run: |
           SIZE=$(stat -c%s "APK_DOWNLOAD/app-debug.apk")
           echo "APK size: $SIZE bytes"
           if [ "$SIZE" -gt 1000000 ]; then
-            echo "✅ APK is valid (greater than 1MB)"
+            echo "✅ Valid APK (greater than 1MB)"
           else
-            echo "❌ APK too small — build failed"
+            echo "❌ APK too small"
             exit 1
           fi
 
