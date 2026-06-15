@@ -32,8 +32,8 @@ android {
       }
       val mainDir = "src/$actualMainName"
       manifest.srcFile("$mainDir/AndroidManifest.xml")
-      java.srcDirs("$mainDir/java", "$mainDir/kotlin")
-      res.srcDirs("$mainDir/res")
+      java.setSrcDirs(listOf("$mainDir/java", "$mainDir/kotlin"))
+      res.setSrcDirs(listOf("$mainDir/res"))
     }
   }
 
