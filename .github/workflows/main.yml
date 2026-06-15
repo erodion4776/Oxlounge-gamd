@@ -5,6 +5,9 @@ on:
     branches: [ main ]
   workflow_dispatch:
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -27,7 +30,9 @@ jobs:
           sed -i '/signingConfig = signingConfigs.getByName("debugConfig")/d' app/build.gradle.kts
 
       - name: Make gradlew executable
-        run: chmod +x gradlew
+        run: |
+          find . -name "gradlew" -exec chmod +x {} \;
+          ls -la gradlew
 
       - name: Cache Gradle packages
         uses: actions/cache@v4
